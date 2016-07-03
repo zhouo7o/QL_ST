@@ -17,7 +17,7 @@ priceList = np.zeros(n)
 for i in range(0,n):
 	priceList[i] = np.sin(i*math.pi/100) + 2
 
-priceList = priceList * 10
+priceList = priceList * 1
 plt.plot(priceList)
 plt.xlabel('Date')
 plt.ylabel('Total Return')
@@ -197,7 +197,7 @@ def algo(length,step):
     sharpRatio = np.zeros(n)
     gamma = 0.5  #discounted future reward rate: immediate vs. future
     sharpe = np.zeros(n)
-    priceState = np.floor(np.sign(logincreList)/2) + 1
+    priceState = np.floor(np.sign(increList)/2) + 1
     reward = 0.0
     QpositionVector = np.zeros(n)
     positionVector = np.zeros(n)
@@ -223,8 +223,8 @@ def algo(length,step):
 			#print(stateVec, indxQs)
 			#action option - 1
 			#action = np.random.random_integers(-1,1)
+			#positionVector[j] = action
 			#action option - 2
-			#action = actionSelection(stateVector, positionVector)
 			positionVector[j] = actionSelection(positionVector, j)			
 			#########################################reward
 			sharpe[j] = sharpeRatio(positionVector)
@@ -241,34 +241,38 @@ def algo(length,step):
     print(step*(n-length),np.sum(Q))
     print(Q)
     print(np.argmax(Q, axis = 1) - 1)
-    sumsr, sumsrsq, total = sumReturn(QpositionVector, increList)
-    print(QpositionVector)
+    sumsr, sumsrsq, total = sumReturn(positionVector, increList)
+    #print(QpositionVector)
     plt.plot(total.transpose())
     plt.xlabel('Date')
     plt.ylabel('Total Return')
     plt.title('L')
     plt.show()
-    
+    return Q
+
+def test(length,Q):
     nn = 1000
-    priceList = np.zeros(nn)
+    TESTpriceList = np.zeros(nn)
     
     for i in range(0,nn):
-		priceList[i] = np.cos(i*math.pi/100) + 2
+		TESTpriceList[i] = math.cos(i*math.pi/100)*math.cos(i*math.pi/100) + 2
     
-    priceList = priceList * 10
-    plt.plot(priceList)
+    TESTpriceList = TESTpriceList * 1
+    plt.plot(TESTpriceList)
     plt.xlabel('Date')
     plt.ylabel('Total Return')
     plt.title('L')
     plt.show()
     QpositionVector = np.zeros(nn)
+    QincreList = increment(TESTpriceList)
+    priceState = np.floor(np.sign(QincreList)/2) + 1
     
     for j in range(length, nn-1):
 		stateVec, indxQs = stateVector(length, j, priceState)
 		QpositionVector[j] = QactionSelection(QpositionVector, Q, indxQs, j)
 
-    print(QpositionVector)
-    sumsr, sumsrsq, total = sumReturn(QpositionVector, increList)
+    #print(QpositionVector)
+    sumsr, sumsrsq, total = sumReturn(QpositionVector, QincreList)
     print('Profit =', sumsr)
     print(n, len(total))
     plt.plot(total.transpose())
@@ -276,5 +280,5 @@ def algo(length,step):
     plt.ylabel('Total Return')
     plt.title('L')
     plt.show()
-    return Q
+    return sumsr
 
