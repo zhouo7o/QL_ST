@@ -8,7 +8,7 @@ comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
 
 length = rank + 1
-episode = 3
+episode = 1
 # print(rrl2.increList)
 Q = QL.algo(length, episode)
 sumsr = QL.test(length,Q)
